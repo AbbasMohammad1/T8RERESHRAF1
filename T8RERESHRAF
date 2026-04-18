@@ -319,9 +319,12 @@ function getRadio(name) {
   return sel ? sel.value : 'م';
 }
 
-function val(id) { return resolve(document.getElementById(id).value); }
+function val(id) { 
+  var el = document.getElementById(id); 
+  return resolve(el ? el.value : ''); 
+}
 
-function generateReport() {
+function generateReport() { try {
   var num = document.getElementById('rep-num').value || '00';
   var tf = document.getElementById('time-from').value || '00:00';
   var tt = document.getElementById('time-to').value || '00:00';
@@ -352,14 +355,14 @@ function generateReport() {
     '**البحث والانقاذ : ( ' + val('rescue') + ' )**',
     'ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ',
     ' **تسليم تقرير الاشراف**',
-    '**تقرير العمليات**',
+    '**[تقرير العمليات]( ' + (document.getElementById('handover-ops').value.trim() || '') + ' )**',
     'ــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــــ',
   ];
   document.getElementById('report-text').value = lines.join('\n');
   var out = document.getElementById('output');
   out.style.display = 'block';
   out.scrollIntoView({behavior:'smooth'});
-}
+  } catch(e) { alert('خطأ: ' + e.message); } }
 
 function copyReport() {
   var ta = document.getElementById('report-text');
