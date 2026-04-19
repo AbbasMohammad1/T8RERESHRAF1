@@ -606,18 +606,32 @@ var members = {
 
 function resolve(val) {
   if (!val || !val.trim()) return 'لا يوجد';
-  var code = val.trim().toUpperCase();
-  if (members[code]) return '<@' + members[code] + '>';
-  return val.trim();
+  var codes = val.trim().split(/[،,\s]+/).filter(function(c){ return c.length > 0; });
+  if (codes.length === 0) return 'لا يوجد';
+  var results = codes.map(function(code) {
+    code = code.trim().toUpperCase();
+    if (members[code]) return '<@' + members[code] + '>';
+    return code;
+  });
+  return results.join(' ');
 }
 
 function showPreview(input) {
   var preview = document.getElementById('preview-' + input.id);
   if (!preview) return;
-  var code = input.value.trim().toUpperCase();
-  if (!code) { preview.innerHTML = ''; preview.className = 'hint info'; return; }
-  if (members[code]) {
-    preview.textContent = '✓ سيتم المنشن تلقائياً';
+  var val = input.value.trim();
+  if (!val) { preview.innerHTML = ''; return; }
+  var codes = val.split(/[،,\s]+/).filter(function(c){ return c.length > 0; });
+  var found = 0, notfound = 0;
+  codes.forEach(function(code) {
+    if (members[code.trim().toUpperCase()]) found++;
+    else notfound++;
+  });
+  if (found > 0 && notfound === 0) {
+    preview.textContent = '✓ ' + found + ' منشن';
+    preview.className = 'hint ok';
+  } else if (found > 0) {
+    preview.textContent = '✓ ' + found + ' منشن / ' + notfound + ' غير موجود';
     preview.className = 'hint ok';
   } else {
     preview.textContent = 'كود غير موجود';
